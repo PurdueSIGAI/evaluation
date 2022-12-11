@@ -1,5 +1,6 @@
 import base64
 import shutil
+from csv import writer
 from datetime import datetime
 from io import BytesIO, StringIO
 from pathlib import Path
@@ -41,15 +42,18 @@ class SingleParticipantSubmissions:
         return datetime.strptime(datetime_part, cls._datetime_format)
 
     def add_submission(self, io_stream: Union[BytesIO, StringIO], submission_name: Optional[str] = None,
-                       file_type_extension: Optional[str] = None):
-        file_safe_submission_name = base64.urlsafe_b64encode(submission_name.encode()).decode()
-        file_safe_submission_name = self._add_timestamp_to_string(file_safe_submission_name or '')
+                       file_type_extension: Optional[str] = None, ipynb: Optional[str] = None):
+        file_safe_submission_name = submission_name
         file_type_extension = f'.{file_type_extension}' if file_type_extension else ''
-        submission_filename = file_safe_submission_name + file_type_extension
+        submission_filename = self._add_timestamp_to_string('') + file_type_extension
         submission_path = self.participant_submission_dir.joinpath(submission_filename)
         with submission_path.open('wb') as f:
             io_stream.seek(0)
             shutil.copyfileobj(io_stream, f)
+        with open(submission_path, 'a') as f:
+            writer_object = writer(f)
+            writer_object.writerow([162,file_safe_submission_name,ipynb])
+            f.close()
 
     def clear_results(self):
         self.results.clear()

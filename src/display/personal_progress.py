@@ -30,7 +30,7 @@ class PersonalProgress:
 
         progress_df = pd.DataFrame([[self.participant_submissions.get_submission_name_from_path(submission_filepath),
                                      self.participant_submissions.get_datetime_from_path(submission_filepath),
-                                     *[res.value for res in submission_results]]
+                                     *[res for res in submission_results]]
                                     for submission_filepath, submission_results in
                                     self.participant_submissions.results.items()],
                                    columns=[self.submission_name_column, self.submission_time_column,

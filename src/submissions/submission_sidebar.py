@@ -25,29 +25,36 @@ class SubmissionSidebar:
     def run_submission(self):
         st.sidebar.title(f"Hello {self.username}!")
         if self.username != ADMIN_USERNAME:
-            st.sidebar.markdown("## Submit Your Results :fire:")
+            st.sidebar.markdown("## Submit Your Predictions Here :fire:")
             self.submit()
 
     def submit(self):
         file_extension_suffix = f" (.{self.submission_file_extension})" if self.submission_file_extension else None
-        submission_io_stream = st.sidebar.file_uploader("Upload your submission file" + file_extension_suffix,
+        submission_io_stream = st.sidebar.file_uploader("Upload your submission csv" + file_extension_suffix,
                                                         type=self.submission_file_extension,
                                                         key=self.file_uploader_key)
-        submission_name = st.sidebar.text_input('Submission name (optional):', value='', max_chars=30)
+        ipynb = st.sidebar.text_input('Notebook URL')
+        parameter_count = st.sidebar.text_input('Parameter Count')
         if st.sidebar.button('Submit'):
-            if submission_io_stream is None:
-                st.sidebar.error('Please upload a submission file.')
+            try:
+                parameter_count = int(parameter_count)
+            except ValueError:
+                st.sidebar.error('Invalid parameter value.')
+                return
+
+            if submission_io_stream is None or type(parameter_count) != int or len(ipynb) == 0:
+                st.sidebar.error('Please complete every field.')
             else:
                 submission_failed = True
                 with st.spinner('Uploading your submission...'):
                     if self.submission_validator is None or self.submission_validator(submission_io_stream):
-                        self._upload_submission(submission_io_stream, submission_name)
+                        self._upload_submission(submission_io_stream, parameter_count, ipynb)
                         submission_failed = False
                 if submission_failed:
                     st.sidebar.error("Upload failed. The submission file is not valid.")
                 else:
                     st.sidebar.success("Upload successful!")
 
-    def _upload_submission(self, io_stream: Union[BytesIO, StringIO], submission_name: Optional[str] = None):
+    def _upload_submission(self, io_stream: Union[BytesIO, StringIO], parameter_count: Optional[str] = None, ipynb: Optional[str] = None):
         self.init_participant()
-        self.participant.add_submission(io_stream, submission_name, self.submission_file_extension)
+        self.participant.add_submission(io_stream, parameter_count, self.submission_file_extension, ipynb)

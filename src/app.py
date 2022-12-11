@@ -75,6 +75,3 @@ if login.run_and_return_if_access_is_allowed() and not login.has_user_signed_out
         admin_display_personal_progress()
 else:
     get_leaderboard().display_leaderboard('', leaderboard_placeholder)
-
-max_width_value = st.sidebar.slider("Select max-width in px", 100, 2000, 1200, 100)
-set_block_container_width(max_width_value)

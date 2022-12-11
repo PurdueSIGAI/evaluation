@@ -41,7 +41,7 @@ class Recall(Metric):
         return True
 
 
-class ExampleEvaluator(Evaluator):
+class PokemonEvaluator(Evaluator):
     def __init__(self):
         super().__init__()
         self.true_label_dict = GROUND_TRUTH_DATA

@@ -1,7 +1,8 @@
 import functools
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
-
+@dataclass
 @functools.total_ordering
 class Metric(ABC):
     def __init__(self, value: float):
@@ -28,6 +29,9 @@ class Metric(ABC):
     def __lt__(self, other):
         self._check_other_metric_compatibility(other)
         return (self.value < other.value) and self.higher_is_better
+
+    def __repr__(self):
+        return f'<{self.name()}, {self.value}>'
 
     def __hash__(self):
         return hash((self.name(), self.value))

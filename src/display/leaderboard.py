@@ -20,6 +20,7 @@ class Leaderboard:
         for participant in participants_dict.values():
             participant.update_results(self.evaluator)
         metric_names = [metric.name() for metric in self.evaluator.metrics()]
+
         leaderboard = pd.DataFrame([[pname, SingleParticipantSubmissions.get_datetime_from_path(best_result[0]),
                                      *best_result[1]] for pname, best_result in
                                     [(pname, p.get_best_result()) for pname, p in participants_dict.items()]
